@@ -10,6 +10,8 @@ public class DatingAcademiaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DatingAcademiaApplication.class, args);
 		System.out.println("asd");
+		System.out.println("asd");
+
 	}
 
 }

@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 public class LoginController {
     @GetMapping("/")
     public String home(){
-        return "login.html";
+        return "login";
     }
 
     //카카오 인가 코드 리턴받은 주소

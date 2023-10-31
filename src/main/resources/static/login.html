@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=d09f0231bc26e125ec67ac84c83587be&redirect_uri=http://localhost:8080/auth/kakao/callback"><img src="/image/kakao_login_medium_narrow.png"></a>
+<p id="token-result"></p>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.4.0/kakao.min.js"
+        integrity="sha384-mXVrIX2T/Kszp6Z0aEWaA8Nm7J6/ZeWXbL8UpGRjKwWe56Srd/iyNmWMBhcItAjH"
+        crossorigin="anonymous">
+</script>
+<script>
+    // //SDK 초기화
+    // Kakao.init('4947722193c6502f7ebebd6deea41f50');
+    //
+    // //SDK 초기화 여부 판단
+    // console.log(Kakao.isInitialized());
+    //
+    // function KakaoLogin() {
+    //     Kakao.Auth.authorize({
+    //         redirectUri : 'http://localhost:8080/login/kakao/oauth',
+    //     })
+    // }
+    //
+    // displayToken()
+    // function displayToken() {
+    //     var token = getCookie('authorize-access-token');
+    //
+    //     if(token) {
+    //         Kakao.Auth.setAccessToken(token);
+    //         Kakao.Auth.getStatusInfo()
+    //             .then(function (res) {
+    //                 if (res.status === 'connected') {
+    //                     document.getElementById('token-result').innerText
+    //                         = 'login success, token : ' + Kakao.Auth.getAccessToken();
+    //                 }
+    //             })
+    //             .catch(function (err) {
+    //                 Kakao.Auth.setAccessToken(null);
+    //             });
+    //     }
+    // }
+    //
+    // function getCookie(name) {
+    //     var parts = document.cookie.split(name + '=');
+    //     if (parts.length === 2) {
+    //         return parts[1].split(';')[0];
+    //     }
+    // }
+</script>
+</body>
+</html>

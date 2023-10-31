@@ -21,7 +21,7 @@ pipeline {
         }
         stage('build') {
             steps {
-                sh '/var/jenkins_home/workspace/${env.JOB_NAME}/gradlew build'
+                sh './gradlew build'
                 sh 'ls -al'
             }
         }

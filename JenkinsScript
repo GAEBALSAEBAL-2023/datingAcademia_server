@@ -1,0 +1,89 @@
+pipeline {
+    agent any
+    
+    environment {
+        imagename = "tjdgus1977/date-academia"
+        registryCredential = 'docker-hub'
+        dockerImage = ''
+        DOCKERHUB_ID = 'tjdgus1977'
+        DOCKERHUB_PW = credentials('docker-hub-pw')
+        last_container = ''
+        last_image = ''
+    }
+
+    stages {
+        stage('git pull') {
+            steps {
+                git branch: 'master', credentialsId: 'github_access_token', url: 'https://github.com/GAEBALSAEBAL-2023/datingAcademia_server.git'
+                sh 'ls -al'
+                sh 'pwd'
+            }
+        }
+        stage('build') {
+            steps {
+                sh '/var/jenkins_home/workspace/${env.JOB_NAME}/gradlew build'
+                sh 'ls -al'
+            }
+        }
+        stage('Build Docker') {
+            steps {
+                script {
+                    dockerImage = docker.build imagename
+                }
+            }
+        }
+        
+        stage('Push Docker') {
+            steps {
+                script {
+                    docker.withRegistry( '', registryCredential) {
+                        dockerImage.push("${env.BUILD_ID}")  
+                    }
+                }
+            }
+        }
+        
+        stage('deploy') {
+            steps {
+                sshagent(credentials: ['ssh-agent'], ignoreMissing: true) {
+                    script {
+                        sh 'ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 "whoami"'
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker login -u $DOCKERHUB_ID -p $DOCKERHUB_PW'"
+                        
+                        // 가동 중인 container, image 삭제
+                        last_container = sh(encoding: 'UTF-8', returnStdout: true, script: "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 docker ps | grep date-academia-be | awk -F '   ' '{print \$7}'")
+                        last_image = sh(encoding: 'UTF-8', returnStdout: true, script: "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 docker image ls | grep date-academia | awk -F '        ' '{print \$2}' | awk -F '   ' '{print \$1}'")
+                        
+                        if (!last_container.isEmpty()) {
+                            sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker rm -f ${last_container}'"
+                            if (!last_image.isEmpty()) {
+                                sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker rmi -f ${last_image}'"
+                            }
+                        }
+                        
+                        
+                    
+                        // 새로운 container 실행
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker run -d -p 8080:8080 --name date-academia-be-${env.BUILD_ID} -e TZ=Asia/Seoul ${imagename}:${env.BUILD_ID}'"
+ 
+                        // sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker rmi ${imagename}:${env.BUILD_ID}'"
+                
+                        last_image = sh(encoding: 'UTF-8', returnStdout: true, script: "docker image ls | grep date-academia | awk -F '        ' '{print \$2}' | awk -F '   ' '{print \$1}'")
+                        
+                        if (!last_image.isEmpty()) {
+                            sh "docker rmi -f ${last_image}"
+                        }
+                    }
+                
+                }
+                    
+            }
+        }
+    }
+    
+        post { 
+            always { 
+                cleanWs()
+            }
+        }
+}

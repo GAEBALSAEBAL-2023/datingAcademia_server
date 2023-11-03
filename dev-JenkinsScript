@@ -64,7 +64,7 @@ pipeline {
                         
                     
                         // 새로운 container 실행
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker run -d -p 8080:8080 --name date-academia-be-${env.BUILD_ID} -e TZ=Asia/Seoul ${imagename}:${env.BUILD_ID}'"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker run -d -p 80:8080 --name date-academia-be-${env.BUILD_ID} -e TZ=Asia/Seoul ${imagename}:${env.BUILD_ID}'"
  
                         // sh "ssh -o StrictHostKeyChecking=no ec2-user@10.0.1.179 'docker rmi ${imagename}:${env.BUILD_ID}'"
                 
